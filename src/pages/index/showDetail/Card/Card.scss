@@ -1,0 +1,57 @@
+.show-detail-content{
+    padding: 10px 25px;
+    background-color: #F8F8FF;
+    .show-detail-block{
+        margin-top: 10px;
+        .show-detail-time{
+            color: #999999;
+            font-size: 30px;
+        }
+        .show-detail-item{
+            margin-top: 20px;
+            width: 640px;
+            height: 100px;
+            border-radius:20px;
+            background-color: white;
+            .point{
+                width: 16px;
+                height: 16px;
+                margin-right: 10px;
+                margin-bottom: 5px;
+                display: inline-block;
+                -moz-border-radius: 60px;
+                -webkit-border-radius: 60px;
+                border-radius: 60px;
+                background-color: #00BF7F;
+            }
+            .point-pay{
+                width: 16px;
+                height: 16px;
+                margin-right: 10px;
+                margin-bottom: 5px;
+                display: inline-block;
+                -moz-border-radius: 60px;
+                -webkit-border-radius: 60px;
+                border-radius: 60px;
+                background-color: #FF0000;
+            }
+            .show-detail-item-name{
+                float: left;
+                margin-left: 30px;
+                margin-top: 25px;
+            }
+            .show-detail-item-value{
+                float: right;
+                width: 160px;
+                margin-top: 25px;
+                color:'#00BF7F';
+            }
+            .show-detail-item-value-pay{
+                float: right;
+                width: 160px;
+                margin-top: 25px;
+                color:'#FF0000';
+            }
+        }
+    }
+}
