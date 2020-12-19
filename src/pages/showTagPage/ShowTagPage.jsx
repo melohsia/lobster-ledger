@@ -12,7 +12,7 @@ export default class ShowTagPage extends Component{
         this.state = {
           current: 0,
           onList:[],
-          type:2
+          type:2,
         }
       }
 
@@ -55,7 +55,7 @@ export default class ShowTagPage extends Component{
       render () {
           const {current, onList, type} = this.state
           return (
-            <View>
+            <View className='tag-page'>
               <AtTabBar
                 tabList={[
                 { title: '支出', iconType:'shopping-bag-2'},

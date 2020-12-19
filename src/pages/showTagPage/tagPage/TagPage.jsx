@@ -1,20 +1,22 @@
 import Taro,{ Component } from '@tarojs/taro'
-import { Block, Button, View } from '@tarojs/components'
-import { AtGrid, AtModal, AtModalHeader, AtModalAction, AtModalContent, AtInput, AtToast } from "taro-ui"
+import { Block, Button, View, Image } from '@tarojs/components'
+import { AtModal, AtModalHeader, AtModalAction, AtModalContent, AtInput, AtToast } from "taro-ui"
 import URL from '../../../common/urls'
 import tag2 from '../../../assets/tag2.png'
 import tag1 from '../../../assets/tag1.png'
 import showToast from '../../../assets/show_toast.png'
 import addTag from '../../../assets/add_tag.png'
+import deletTag from '../../../assets/delet_tag.png'
 import {db} from '../../../service/api'
 import './TagPage.scss'
 
 export default class TagPage extends Component{
 
     state={
-        data:{},
+        currentTagList:[],
         isOpened:false,
         isShowToast:false,
+        isShowDeletIcon:false,
         type:null,
         tagInput:''
     }
@@ -22,7 +24,7 @@ export default class TagPage extends Component{
     componentWillReceiveProps(nextProps){
         if(nextProps&&(nextProps != this.props)){
             this.setState({
-                type:nextProps.type
+                type:nextProps.type,
             })
             this.dataDeal(nextProps.tagList,nextProps.type)
         }
@@ -30,14 +32,12 @@ export default class TagPage extends Component{
 
     dataDeal(tagList, type){
         let currentTagList=[]
-        let data ={}
         tagList.map((tag) => {
             type===1?currentTagList.push({image:tag1,value:tag.value}):currentTagList.push({image:tag2,value:tag.value})
         })
         currentTagList.push({image:addTag,value:'添加新标签'})
-        data={currentTagList}
         this.setState({
-            data
+            currentTagList:currentTagList
         })
     }
 
@@ -103,16 +103,35 @@ export default class TagPage extends Component{
         })
     }
 
-    click(){
-        console.log('click')
+    showDeletIcon(){
+        this.setState({
+            isShowDeletIcon:true
+        })
     }
 
     render(){
-        const {data, type, isOpened, tagInput, isShowToast} = this.state
+        const {currentTagList, type, isOpened, tagInput, isShowToast, isShowDeletIcon} = this.state
         return(
             <Block>
-                <View onLongPress={() => {this.click()}}>
-                    <AtGrid data={data['currentTagList']} onClick={(item) => {this.gotoBookKeeping(item.value,type)}} />
+                <View className='tag-block-list'>
+                    {
+                        currentTagList&&currentTagList.map((item) => (
+                            <View className='tag-block' key={item.id} 
+                              onClick={() => {this.gotoBookKeeping(item.value,type)}}
+                              onLongPress={this.showDeletIcon.bind(this, item.value)}
+                            >
+                                <Image className='tag-img' src={item.image} />
+                                {
+                                    isShowDeletIcon&&
+                                    <View className='tag-img-delet'>
+                                        <Image className='tag-img-delet-icon' src={deletTag} />
+                                    </View>
+                                }
+                                
+                                <View className='tag-name'>{item.value}</View>
+                            </View>
+                        ))
+                    }
                 </View>
                 <AtModal isOpened={isOpened}>
                     <AtModalHeader>添加新标签</AtModalHeader>
