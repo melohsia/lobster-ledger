@@ -12,7 +12,7 @@ export default class ShowTagPage extends Component{
         this.state = {
           current: 0,
           onList:[],
-          type:2,
+          type:'2',
         }
       }
 
@@ -21,7 +21,11 @@ export default class ShowTagPage extends Component{
           title: '加载中',
           mask:true
         })
-        this.getPayTags(2)
+        this.getPayTags('2')
+      }
+
+      config = {
+        navigationBarTitleText: '选择标签'
       }
 
       getPayTags(type){
@@ -44,7 +48,7 @@ export default class ShowTagPage extends Component{
           title: '加载中',
           mask:true
         })
-        const type = value?1:2
+        const type = value ? '1':'2'
         this.getPayTags(type)
         this.setState({
           current: value,

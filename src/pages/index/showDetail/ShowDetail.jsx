@@ -99,11 +99,11 @@ export default class ClassName extends Component{
                                                   title={month.split('/')[0]+'年'+month.split('/')[1]+'月'}
                                                   isAnimation={false}
                                                 >   
-                                                <ScrollView
-                                                  className='scrollview'
-                                                  scrollY
-                                                  scrollWithAnimation
-                                                >
+                                                    <ScrollView
+                                                      className='scrollview'
+                                                      scrollY
+                                                      scrollWithAnimation
+                                                    >
                                                         <Card detailMap={detailMap} detailList={detailList} month={month} />
                                                     </ScrollView>
                                                 </AtAccordion>

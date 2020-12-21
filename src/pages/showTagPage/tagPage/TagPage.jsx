@@ -7,6 +7,7 @@ import tag1 from '../../../assets/tag1.png'
 import showToast from '../../../assets/show_toast.png'
 import addTag from '../../../assets/add_tag.png'
 import deletTag from '../../../assets/delet_tag.png'
+import cancelDelet from '../../../assets/cancel_delet.png'
 import {db} from '../../../service/api'
 import './TagPage.scss'
 
@@ -17,8 +18,9 @@ export default class TagPage extends Component{
         isOpened:false,
         isShowToast:false,
         isShowDeletIcon:false,
-        type:null,
-        tagInput:''
+        type:'',
+        tagInput:'',
+        toastText:''
     }
 
     componentWillReceiveProps(nextProps){
@@ -33,7 +35,7 @@ export default class TagPage extends Component{
     dataDeal(tagList, type){
         let currentTagList=[]
         tagList.map((tag) => {
-            type===1?currentTagList.push({image:tag1,value:tag.value}):currentTagList.push({image:tag2,value:tag.value})
+            type==='1'?currentTagList.push({id:tag._id,image:tag1,value:tag.value}):currentTagList.push({id:tag._id,image:tag2,value:tag.value})
         })
         currentTagList.push({image:addTag,value:'添加新标签'})
         this.setState({
@@ -42,6 +44,7 @@ export default class TagPage extends Component{
     }
 
     addTagConfirm(value, type){
+        let that = this
         if(value&&type){
             db.collection('tags').add({
                 data: {
@@ -52,25 +55,28 @@ export default class TagPage extends Component{
               .then(res => {
                 Taro.hideLoading()
                 console.log(res)
-                this.setState({
-                    tagInput:''
+                that.setState({
+                    tagInput:'',
+                    toastText:''
                 })
-                this.props.onGetPayTags(type)
+                that.props.onGetPayTags(type)
               })
 
         }else{
-            this.setState({
-                isShowToast:true
+            that.setState({
+                isShowToast:true,
+                toastText:'请输入标签名'
             },Taro.hideLoading())
         }
     }
 
     gotoBookKeeping(tagName,type){
+        const {isShowToast, isShowDeletIcon} = this.state
         if(tagName === '添加新标签'){
             this.setState({
                 isOpened:true,
             })
-        }else{
+        }else if(!(isShowToast||isShowDeletIcon)){
             Taro.navigateTo({
                 url:URL.BOOKKEEPING+'?tagName='+tagName+'&type='+type
               })
@@ -85,8 +91,20 @@ export default class TagPage extends Component{
             Taro.showLoading({
                 title: '加载中',
                 mask:true
-              })
-            this.addTagConfirm(tagName,type)
+            })
+            let tagList = []
+            this.props.tagList.map((tag) => {
+                tagList.push(tag.value)
+            })
+            if(tagList.indexOf(tagName)>-1){
+                this.setState({
+                    isShowToast:true,
+                    toastText:'标签已存在',
+                    tagInput:''
+                },Taro.hideLoading())
+            }else{
+                this.addTagConfirm(tagName,type)
+            }
         }
     }
 
@@ -109,26 +127,57 @@ export default class TagPage extends Component{
         })
     }
 
+    handleCancel(){
+        this.setState({
+            isShowDeletIcon:false
+        })
+    }
+
+    handleDeletTag(id){
+        let that = this
+        Taro.showLoading({
+            title: '加载中',
+            mask:true
+          })
+        db.collection('tags').doc(id).remove({
+            success: function(res) {
+              Taro.hideLoading()
+              console.log(res)
+              that.setState({
+                  isShowDeletIcon:false,
+              })
+              that.props.onGetPayTags(that.state.type)
+            }
+          })
+    }
+
     render(){
-        const {currentTagList, type, isOpened, tagInput, isShowToast, isShowDeletIcon} = this.state
+        const {currentTagList, type, isOpened, tagInput, isShowToast, isShowDeletIcon, toastText} = this.state
         return(
             <Block>
                 <View className='tag-block-list'>
                     {
                         currentTagList&&currentTagList.map((item) => (
                             <View className='tag-block' key={item.id} 
-                              onClick={() => {this.gotoBookKeeping(item.value,type)}}
                               onLongPress={this.showDeletIcon.bind(this, item.value)}
                             >
-                                <Image className='tag-img' src={item.image} />
+                                <Image className='tag-img' src={item.image} onClick={() => {this.gotoBookKeeping(item.value,type)}} />
                                 {
-                                    isShowDeletIcon&&
+                                    isShowDeletIcon&&(item.value!=='添加新标签')&&
                                     <View className='tag-img-delet'>
-                                        <Image className='tag-img-delet-icon' src={deletTag} />
+                                        <Image className='tag-img-delet-icon' src={deletTag} onClick={this.handleDeletTag.bind(this, item.id)} />
                                     </View>
                                 }
                                 
-                                <View className='tag-name'>{item.value}</View>
+                                <View className='tag-name' onClick={() => {this.gotoBookKeeping(item.value,type)}}>
+                                    {item.value}
+                                </View>
+                                {
+                                    isShowDeletIcon&&(item.value!=='添加新标签')&&
+                                    <View className='tag-img-cancel-delet' onClick={this.handleCancel.bind(this)}>
+                                        <Image className='tag-img-cancel-delet-icon' src={cancelDelet} />
+                                    </View>
+                                }
                             </View>
                         ))
                     }
@@ -150,7 +199,7 @@ export default class TagPage extends Component{
                         <Button onClick={this.handleClick.bind(this, 1, tagInput, type)}>提交</Button> 
                     </AtModalAction>
                 </AtModal>
-                <AtToast onClose={() => {this.closeToast()}} isOpened={isShowToast} text='请输入标签名' image={showToast}></AtToast>
+                <AtToast onClose={() => {this.closeToast()}} isOpened={isShowToast} text={toastText} image={showToast}></AtToast>
             </Block>
         )
     }

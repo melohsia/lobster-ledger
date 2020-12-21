@@ -62,10 +62,10 @@ export default class Index extends Component {
   detailListSwitch(status){
     switch(status){
       case 1 :
-        this.getDetailListByType(1)
+        this.getDetailListByType('1')
         break
       case 2:
-        this.getDetailListByType(2)
+        this.getDetailListByType('2')
         break
       default:
         this.getDetailList()

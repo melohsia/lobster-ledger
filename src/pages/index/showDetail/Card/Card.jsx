@@ -4,8 +4,6 @@ import './Card.scss'
 
 export default class Card extends Component{
 
-    
-
     render(){
         const {detailMap, month } = this.props
         return(
@@ -19,7 +17,7 @@ export default class Card extends Component{
                                     <View className='show-detail-item' key={item.id}>
                                          <View className='show-detail-item-name'>{item.item_name}</View>
                                          {
-                                             item.type ===1 ?
+                                             item.type === '1' ?
                                              <View className='show-detail-item-value'>
                                                 <View className='point' />
                                                     {item.money}
