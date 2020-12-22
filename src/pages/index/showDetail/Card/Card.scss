@@ -40,6 +40,22 @@
                 margin-left: 30px;
                 margin-top: 25px;
             }
+            .show-detail-item-tag{
+                float: left;
+                width: 120px;
+                height: 100px;
+                display: table-cell;
+                text-align: center;
+                .show-detail-item-tag-img{
+                    width: 60px;
+                    height: 60px;
+                }
+                .show-detail-item-tag-content{
+                    width: auto;
+                    height: 40px;
+                    font-size: 24px;
+                }
+            }
             .show-detail-item-value{
                 float: right;
                 width: 160px;

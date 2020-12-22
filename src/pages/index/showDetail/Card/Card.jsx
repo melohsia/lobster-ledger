@@ -1,5 +1,6 @@
 import Taro,{ Component } from '@tarojs/taro'
-import { View } from '@tarojs/components'
+import { View, Image } from '@tarojs/components'
+import tagImg from '../../../../assets/tag.png'
 import './Card.scss'
 
 export default class Card extends Component{
@@ -15,6 +16,10 @@ export default class Card extends Component{
                             {
                                 detailMap[date.startsWith(month)?date:''].map((item) => (
                                     <View className='show-detail-item' key={item.id}>
+                                         <View className='show-detail-item-tag'>
+                                             <Image className='show-detail-item-tag-img' src={tagImg}></Image>
+                                             <View className='show-detail-item-tag-content'>{item.tag_name}</View>
+                                         </View>
                                          <View className='show-detail-item-name'>{item.item_name}</View>
                                          {
                                              item.type === '1' ?
