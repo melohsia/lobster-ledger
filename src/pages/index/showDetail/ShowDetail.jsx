@@ -96,7 +96,7 @@ export default class ClassName extends Component{
                                                   key={month.id}
                                                   open={open[monthList.findIndex((value) => {return value==month})]}
                                                   onClick={this.handleClick.bind(this, monthList.findIndex((value) => {return value==month}))}
-                                                  title={month.split('/')[0]+'年'+month.split('/')[1]+'月'}
+                                                  title={month.split('-')[0]+'年'+month.split('-')[1]+'月'}
                                                   isAnimation={false}
                                                 >   
                                                     <ScrollView

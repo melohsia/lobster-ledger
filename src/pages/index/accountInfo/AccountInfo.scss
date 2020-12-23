@@ -1,4 +1,58 @@
 .account-info{
     width: 100%;
-    height: 40%;
+    height: 512px;
+    position: relative;
+    .home-bg{
+        margin-top: 10px;
+        padding: 0 20px;
+        .home-bg-img{
+            width: 710px;
+            height: 450px;
+        }
+    }
+    .card{
+        width: 600px;
+        height: 350px;
+        // background-color: salmon;
+        background-color: seashell;
+        position: absolute;
+        border-radius: 20px;
+        left: 70px;
+        bottom: 10px;
+        opacity: 0.9;
+        .show-name{
+            width: auto;
+            font-weight: 500;
+            color: #6190E8;
+            margin-left: 30px;
+            margin-top: 20px;
+        }
+        .is{
+            color: #6190E8;
+            margin-left: 30px;
+            width: 100%;
+        }
+        .show-tips{
+            font-size: 50px;
+            color:  #6190E8;
+            font-weight: 600;
+            margin-left: 30px;
+            width:300px;
+            margin-top: 10px;
+            .tx-icon2{
+                width: 80px;
+                height: 80px;
+                float: right;
+            }
+        }
+        .show-balance{
+            float: right;
+            width: 400px;
+            height: 100px;
+            color:  #6190E8;
+            font-size: 50px;
+            font-weight: 500;
+            margin-top: 20px;
+        }
+    }
 }

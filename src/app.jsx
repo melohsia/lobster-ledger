@@ -27,7 +27,8 @@ class App extends Component {
       'pages/bookKeeping/BookKeeping',
       'pages/personalCenter/PersonalCenter',
       'pages/bill/Bill',
-      'pages/showTagPage/ShowTagPage'
+      'pages/showTagPage/ShowTagPage',
+      'pages/ledgerEdit/LedgerEdit'
     ],
     tabBar: {
       color: '#999999',

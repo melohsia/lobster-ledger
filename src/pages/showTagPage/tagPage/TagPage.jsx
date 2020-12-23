@@ -78,7 +78,7 @@ export default class TagPage extends Component{
             })
         }else if(!(isShowToast||isShowDeletIcon)){
             Taro.navigateTo({
-                url:URL.BOOKKEEPING+'?tagName='+tagName+'&type='+type
+                url:URL.BOOKKEEPING+'?tagName='+tagName+'&type='+type+'&action=add'
               })
         }
     }

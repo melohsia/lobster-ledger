@@ -10,6 +10,7 @@ export default class Index extends Component {
 
   state={
     onList:[],
+    userInfo:{}
     // status:0
   }
 
@@ -18,6 +19,7 @@ export default class Index extends Component {
       title: '加载中',
       mask:true
     })
+    this.getUserInfo()
     this.getDetailList()
   }
 
@@ -36,6 +38,22 @@ export default class Index extends Component {
           that.setState({
             onList:res.data
           }, Taro.hideLoading())
+        }
+    })
+  }
+
+  getUserInfo(){
+    let that = this
+    const _ = db.command
+    db.collection('user').where({
+      _openid:_.eq('o01Qj5Rb0d3sJw0pvwHV75APd3U8')
+    })
+    .get({
+        success: function(res) {
+          console.log('res', res)
+          that.setState({
+            userInfo:res.data[0]
+          })
         }
     })
   }
@@ -80,10 +98,10 @@ export default class Index extends Component {
   }
   
   render () {
-    const {onList} = this.state
+    const {onList, userInfo} = this.state
     return (
       <View className='background'>
-          <AccountInfo />
+          <AccountInfo userInfo={userInfo} />
           <ShowDetail detailList={onList} onSwitchStatus={(status) => {this.onSwitchStatus(status)}} />
           <View className='add-button-fill'></View>
           <Button className='add-button' onClick={this.gotoShowTagPage.bind(this)}>添加</Button>
