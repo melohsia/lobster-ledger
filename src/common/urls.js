@@ -4,5 +4,6 @@ export default {
     PERSONALCENTER: '/pages/personalCenter/PersonalCenter',
     BILL: '/pages/bill/Bill',
     SHOWTAGPAGE:'/pages/showTagPage/ShowTagPage',
-    LEDGEREDIT:'/pages/ledgerEdit/LedgerEdit'
+    LEDGEREDIT:'/pages/ledgerEdit/LedgerEdit',
+    REGISTER:'/pages/register/Register'
 }
