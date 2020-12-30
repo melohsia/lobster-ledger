@@ -1,6 +1,8 @@
 import Taro,{ Component } from '@tarojs/taro'
 import { Block, Button, View, Image } from '@tarojs/components'
 import { AtModal, AtModalHeader, AtModalAction, AtModalContent, AtInput, AtToast } from "taro-ui"
+import {connect} from '@tarojs/redux'
+import {updateLoginStatus} from '../../../store/user/action'
 import URL from '../../../common/urls'
 import tag2 from '../../../assets/tag2.png'
 import tag1 from '../../../assets/tag1.png'
@@ -11,6 +13,14 @@ import cancelDelet from '../../../assets/cancel_delet.png'
 import {db} from '../../../service/api'
 import './TagPage.scss'
 
+@connect(
+    ({user}) => ({
+      loginStatus:user.loginStatus
+    }),
+    {
+      dispatchUpdateLoginStatus:updateLoginStatus
+    }
+  )
 export default class TagPage extends Component{
 
     state={
@@ -27,6 +37,7 @@ export default class TagPage extends Component{
         if(nextProps&&(nextProps != this.props)){
             this.setState({
                 type:nextProps.type,
+                isShowDeletIcon:nextProps.isShowDeletIcon
             })
             this.dataDeal(nextProps.tagList,nextProps.type)
         }
@@ -46,22 +57,33 @@ export default class TagPage extends Component{
     addTagConfirm(value, type){
         let that = this
         if(value&&type){
-            db.collection('tags').add({
-                data: {
-                  type:type,
-                  value:value
+            Taro.getStorage({
+                key: 'userId',
+                success:  (user) => {
+                    db.collection('tags').add({
+                        data: {
+                          type:type,
+                          value:value,
+                          user_id:user.data
+                        }
+                      })
+                      .then(res => {
+                        Taro.hideLoading()
+                        console.log(res)
+                        that.setState({
+                            tagInput:'',
+                            toastText:''
+                        })
+                        that.props.onGetPayTags(type, user.data)
+                      })
+                },
+                fail:function(){
+                  that.props.dispatchUpdateLoginStatus(false)
+                  Taro.navigateTo({
+                    url:URL.INDEX
+                  })
                 }
               })
-              .then(res => {
-                Taro.hideLoading()
-                console.log(res)
-                that.setState({
-                    tagInput:'',
-                    toastText:''
-                })
-                that.props.onGetPayTags(type)
-              })
-
         }else{
             that.setState({
                 isShowToast:true,
@@ -139,16 +161,28 @@ export default class TagPage extends Component{
             title: '加载中',
             mask:true
           })
-        db.collection('tags').doc(id).remove({
-            success: function(res) {
-              Taro.hideLoading()
-              console.log(res)
-              that.setState({
-                  isShowDeletIcon:false,
+          Taro.getStorage({
+            key: 'userId',
+            success: (user) => {
+                db.collection('tags').doc(id).remove({
+                    success: (res) => {
+                      Taro.hideLoading()
+                      console.log(res)
+                      that.setState({
+                          isShowDeletIcon:false,
+                      })
+                      that.props.onGetPayTags(that.state.type, user.data)
+                    }
+                  })
+            },
+            fail:function(){
+              that.props.dispatchUpdateLoginStatus(false)
+              Taro.navigateTo({
+                url:URL.INDEX
               })
-              that.props.onGetPayTags(that.state.type)
             }
           })
+        
     }
 
     render(){

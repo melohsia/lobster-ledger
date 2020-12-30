@@ -1,9 +1,10 @@
 import Taro from '@tarojs/taro'
 import { View, Image, Button } from '@tarojs/components'
-import { AtForm, AtInput, AtToast } from 'taro-ui'
+import { AtForm, AtInput, AtToast, AtMessage } from 'taro-ui'
 import registerbg from '../../assets/register_bg.png'
 import URL from '../../common/urls'
 import showToast from '../../assets/show_toast.png'
+import {db} from '../../service/api'
 import './Register.scss'
 
 export default class Register extends Taro.Component {
@@ -38,11 +39,33 @@ export default class Register extends Taro.Component {
   }
 
   register(){
+    let that = this
     const {uname, pwd, nname} = this.state
     if(uname&&pwd&&nname){
-        console.log(uname, pwd, nname)
+        db.collection('user').add({
+            data: {
+              balance:0,
+              nick_name:nname,
+              password:pwd,
+              user_name:uname
+            }
+          })
+          .then(res => {
+            Taro.hideLoading()
+            console.log(res)
+            Taro.atMessage({
+                'message': '注册成功',
+                'type': 'success',
+                'duration': 1000
+            })
+            setTimeout(() => {
+                Taro.reLaunch({
+                    url:URL.INDEX
+                })
+            }, 1000);
+          })
     }else{
-        this.setState({
+        that.setState({
             isShowToast:true
         })
     }
@@ -53,11 +76,12 @@ export default class Register extends Taro.Component {
         isShowToast:false
     })
   }
+  
   render () {
       const {uname, pwd, nname, isShowToast} = this.state
-      console.log(this.state)
       return (
           <View className='login-background'>
+              <AtMessage />
               <View className='login-bg'>
                   <Image className='login-bg-icon' src={registerbg}></Image>
               </View>
@@ -82,7 +106,7 @@ export default class Register extends Taro.Component {
                       <AtInput 
                         name='value' 
                         title='密码' 
-                        type='text' 
+                        type='password' 
                         placeholder='请设置一个好记的密码' 
                         value={pwd} 
                         onChange={this.handleChangePwd.bind(this)} 
@@ -92,7 +116,6 @@ export default class Register extends Taro.Component {
               <Button className='log-button'onClick={this.register.bind(this)} >注册</Button>
               <AtToast onClose={() => {this.closeToast()}} isOpened={isShowToast} text='请将信息补充完整' image={showToast}></AtToast>
           </View>
-        
       )
     }
 }

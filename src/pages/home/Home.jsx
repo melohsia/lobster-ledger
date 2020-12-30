@@ -1,17 +1,27 @@
 import Taro, { Component } from '@tarojs/taro'
 import {View, Button} from '@tarojs/components'
+import {connect} from '@tarojs/redux'
 import AccountInfo from './accountInfo/AccountInfo'
 import ShowDetail from './showDetail/ShowDetail'
+import {updateLoginStatus} from '../../store/user/action'
 import {db} from '../../service/api'
 import URL from '../../common/urls'
 import './Home.scss'
+
+@connect(
+  ({user}) => ({
+    loginStatus:user.loginStatus
+  }),
+  {
+    dispatchUpdateLoginStatus:updateLoginStatus
+  }
+)
 
 export default class Home extends Component {
 
   state={
     onList:[],
-    userInfo:{}
-    // status:0
+    userInfo:{},
   }
 
   componentWillMount(){
@@ -19,8 +29,18 @@ export default class Home extends Component {
       title: '加载中',
       mask:true
     })
-    this.getUserInfo()
-    this.getDetailList()
+    this.homeInit()
+  }
+
+  homeInit(){
+    let that = this
+    Taro.getStorage({
+      key: 'userId',
+      success: function (res) {
+        that.getUserInfo(res.data)
+        that.getDetailList(res.data)
+      }
+    })
   }
 
   onSwitchStatus(status){
@@ -30,9 +50,13 @@ export default class Home extends Component {
     this.detailListSwitch(status)
   }
 
-  getDetailList(){
+  getDetailList(userId){
     let that = this
-    db.collection('detail').orderBy('time', 'desc')
+    const _ = db.command
+    db.collection('detail').where({
+      user_id:_.eq(userId)
+    })
+    .orderBy('time', 'desc')
     .get({
         success: function(res) {
           that.setState({
@@ -42,33 +66,37 @@ export default class Home extends Component {
     })
   }
 
-  getUserInfo(){
+  getUserInfo(userId){
     let that = this
-    const _ = db.command
-    db.collection('user').where({
-      _openid:_.eq('o01Qj5Rb0d3sJw0pvwHV75APd3U8')
-    })
+    db.collection('user').doc(userId)
     .get({
         success: function(res) {
-          console.log('res', res)
           that.setState({
-            userInfo:res.data[0]
+            userInfo:res.data
           })
         }
     })
   }
 
-  getDetailListByType(type){
+  getDetailListByType(type, userId){
     let that = this
     const _ = db.command
     db.collection('detail').where({
-      type:_.eq(type)
+      type:_.eq(type),
+      user_id:userId
     }).orderBy('time', 'desc')
     .get({
         success: function(res) {
           that.setState({
             onList:res.data
           }, Taro.hideLoading())
+        },
+        fail: function() {
+          Taro.hideLoading()
+          that.props.dispatchUpdateLoginStatus(false)
+          Taro.navigateTo({
+            url:URL.INDEX
+          })
         }
     })
   }
@@ -78,15 +106,52 @@ export default class Home extends Component {
   }
 
   detailListSwitch(status){
+    let that = this
     switch(status){
       case 1 :
-        this.getDetailListByType('1')
+        Taro.getStorage({
+          key: 'userId',
+          success: function (res) {
+            that.getDetailListByType('1', res.data)
+          },
+          fail: function() {
+            Taro.hideLoading()
+            that.props.dispatchUpdateLoginStatus(false)
+            Taro.navigateTo({
+              url:URL.INDEX
+            })
+          }
+        })
         break
       case 2:
-        this.getDetailListByType('2')
+        Taro.getStorage({
+          key: 'userId',
+          success: function (res) {
+            that.getDetailListByType('2', res.data)
+          },
+          fail: function() {
+            Taro.hideLoading()
+            that.props.dispatchUpdateLoginStatus(false)
+            Taro.navigateTo({
+              url:URL.INDEX
+            })
+          }
+        })
         break
       default:
-        this.getDetailList()
+        Taro.getStorage({
+          key: 'userId',
+          success: function (res) {
+            that.getDetailList(res.data)
+          },
+          fail: function() {
+            Taro.hideLoading()
+            that.props.dispatchUpdateLoginStatus(false)
+            Taro.navigateTo({
+              url:URL.INDEX
+            })
+          }
+        })
         break
     }
   }

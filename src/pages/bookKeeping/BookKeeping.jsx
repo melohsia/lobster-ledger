@@ -81,24 +81,31 @@ export default class BookKeeping extends Component{
         let month = time.split('-')[0]+'-'+time.split('-')[1]
         let year =  time.split('-')[0]
         if(itemName&&money&&month&&tagName&&time&&type&&year){
-          db.collection('detail').add({
-            data: {
-              item_name:itemName,
-              money:money,
-              month:month,
-              tag_name:tagName,
-              time:time,
-              type:type,
-              year:year,
-            },
-            success: function(res) {
-              console.log(res)
-              Taro.hideLoading()
+          Taro.getStorage({
+            key: 'userId',
+            success: function (user) {
+              db.collection('detail').add({
+                data: {
+                  item_name:itemName,
+                  money:money,
+                  month:month,
+                  tag_name:tagName,
+                  time:time,
+                  type:type,
+                  year:year,
+                  user_id:user.data
+                },
+                success: function(res) {
+                  console.log(res)
+                  Taro.hideLoading()
+                  Taro.reLaunch({
+                    url:URL.INDEX
+                  })
+                }
+              })
             }
           })
-              Taro.reLaunch({
-                url:URL.INDEX
-              })
+          
         }else{
           Taro.hideLoading()
           this.setState({

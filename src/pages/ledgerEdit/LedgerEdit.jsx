@@ -34,7 +34,9 @@ export default class LedgerEdit extends Component{
         this.setState({
             editItem,
             dateSel:editItem.time,
-            selectorChecked:editItem.tag_name
+            selectorChecked:editItem.tag_name,
+            itemName:editItem.item_name,
+            money:editItem.money
         })
     }
 
@@ -111,6 +113,12 @@ export default class LedgerEdit extends Component{
                     selector:onList
                 }, Taro.hideLoading())
             }
+        })
+      }
+
+      closeToast(){
+        this.setState({
+          isShowToast:false
         })
       }
 
